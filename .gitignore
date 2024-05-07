@@ -1,0 +1,13 @@
+# Fabric binaries
+bin/
+
+# Generated files
+base-data/generated/*
+!base-data/generated/.gitkeep
+
+# Packaged chaincode
+chaincode.tar.gz
+
+# Chaincode-related files
+chaincode/node_modules/
+chaincode/dist/
