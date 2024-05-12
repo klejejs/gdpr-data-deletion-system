@@ -1,9 +1,7 @@
-/*
- * SPDX-License-Identifier: Apache-2.0
- */
+import { RemovalIntegrationContract } from './contracts/removalIntegration';
 
-import {AssetTransferContract} from './assetTransfer';
+export { RemovalIntegrationContract } from './contracts/removalIntegration';
 
-export {AssetTransferContract} from './assetTransfer';
-
-export const contracts: any[] = [AssetTransferContract];
+export const contracts: any[] = [
+  RemovalIntegrationContract,
+];

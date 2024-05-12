@@ -1,0 +1,10 @@
+PeerOrgs:
+  - Name: Branch1
+    Domain: branch1.lejejs.com
+    EnableNodeOUs: true
+    Template:
+      Count: 1
+      SANS:
+        - localhost
+    Users:
+      Count: 1

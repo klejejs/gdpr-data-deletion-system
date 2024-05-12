@@ -1,0 +1,166 @@
+Organizations:
+  - &Orderer
+    Name: Orderer
+    ID: OrdererMSP
+    MSPDir: ../generated/ca/ordererOrganizations/lejejs.com/msp
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('OrdererMSP.member')"
+      Writers:
+        Type: Signature
+        Rule: "OR('OrdererMSP.member')"
+      Admins:
+        Type: Signature
+        Rule: "OR('OrdererMSP.admin')"
+    OrdererEndpoints:
+      - orderer.lejejs.com:7050
+  - &Branch1
+    Name: Branch1
+    ID: Branch1MSP
+    MSPDir: ../generated/ca/peerOrganizations/branch1.lejejs.com/msp
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('Branch1MSP.admin', 'Branch1MSP.peer', 'Branch1MSP.client')"
+      Writers:
+        Type: Signature
+        Rule: "OR('Branch1MSP.admin', 'Branch1MSP.client')"
+      Admins:
+        Type: Signature
+        Rule: "OR('Branch1MSP.admin')"
+      Endorsement:
+        Type: Signature
+        Rule: "OR('Branch1MSP.peer')"
+    AnchorPeers:
+      - Host: peer0.branch1.lejejs.com
+        Port: 7051
+  - &Branch2
+    Name: Branch2
+    ID: Branch2MSP
+    MSPDir: ../generated/ca/peerOrganizations/branch2.lejejs.com/msp
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('Branch2MSP.admin', 'Branch2MSP.peer', 'Branch2MSP.client')"
+      Writers:
+        Type: Signature
+        Rule: "OR('Branch2MSP.admin', 'Branch2MSP.client')"
+      Admins:
+        Type: Signature
+        Rule: "OR('Branch2MSP.admin')"
+      Endorsement:
+        Type: Signature
+        Rule: "OR('Branch2MSP.peer')"
+    AnchorPeers:
+      - Host: peer0.branch2.lejejs.com
+        Port: 9051
+  - &Branch3
+    Name: Branch3
+    ID: Branch3MSP
+    MSPDir: ../generated/ca/peerOrganizations/branch3.lejejs.com/msp
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('Branch3MSP.admin', 'Branch3MSP.peer', 'Branch3MSP.client')"
+      Writers:
+        Type: Signature
+        Rule: "OR('Branch3MSP.admin', 'Branch3MSP.client')"
+      Admins:
+        Type: Signature
+        Rule: "OR('Branch3MSP.admin')"
+      Endorsement:
+        Type: Signature
+        Rule: "OR('Branch3MSP.peer')"
+    AnchorPeers:
+      - Host: peer0.branch3.lejejs.com
+        Port: 11051
+
+Capabilities:
+  Channel: &ChannelCapabilities
+    V2_0: true
+  Orderer: &OrdererCapabilities
+    V2_0: true
+  Application: &ApplicationCapabilities
+    V2_5: true
+
+Application: &ApplicationDefaults
+  Organizations:
+  Policies:
+    Readers:
+      Type: ImplicitMeta
+      Rule: "ANY Readers"
+    Writers:
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
+    Admins:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Admins"
+    LifecycleEndorsement:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Endorsement"
+    Endorsement:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Endorsement"
+  Capabilities:
+    <<: *ApplicationCapabilities
+
+Orderer: &OrdererDefaults
+  Addresses:
+    - orderer.lejejs.com:7050
+  BatchTimeout: 2s
+  BatchSize:
+    MaxMessageCount: 10
+    AbsoluteMaxBytes: 99 MB
+    PreferredMaxBytes: 512 KB
+  Organizations:
+  Policies:
+    Readers:
+      Type: ImplicitMeta
+      Rule: "ANY Readers"
+    Writers:
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
+    Admins:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Admins"
+    BlockValidation:
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
+
+Channel: &ChannelDefaults
+  Policies:
+    Readers:
+      Type: ImplicitMeta
+      Rule: "ANY Readers"
+    Writers:
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
+    Admins:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Admins"
+  Capabilities:
+    <<: *ChannelCapabilities
+
+Profiles:
+  DefaultChannel:
+    <<: *ChannelDefaults
+    Orderer:
+      <<: *OrdererDefaults
+      OrdererType: etcdraft
+      EtcdRaft:
+        Consenters:
+          - Host: orderer.lejejs.com
+            Port: 7050
+            ClientTLSCert: ../generated/ca/ordererOrganizations/lejejs.com/orderers/orderer.lejejs.com/tls/server.crt
+            ServerTLSCert: ../generated/ca/ordererOrganizations/lejejs.com/orderers/orderer.lejejs.com/tls/server.crt
+      Organizations:
+        - *Orderer
+      Capabilities: *OrdererCapabilities
+    Application:
+      <<: *ApplicationDefaults
+      Organizations:
+        - *Branch1
+        - *Branch2
+        - *Branch3
+      Capabilities: *ApplicationCapabilities
